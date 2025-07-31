@@ -1,0 +1,30 @@
+FROM pytorch/pytorch:2.7.1-cuda12.8-cudnn9-devel
+
+RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
+
+RUN echo "/opt/conda/lib/python3.11/site-packages/nvidia/cudnn/lib" > /etc/ld.so.conf.d/cudnn.conf && \
+    ldconfig && \
+    cd /opt/conda/lib/python3.11/site-packages/nvidia/cudnn/lib && \
+    ln -sf libcudnn_ops.so.9 libcudnn_ops.so.9.1.0 && \
+    ln -sf libcudnn_ops.so.9 libcudnn_ops.so.9.1 && \
+    ln -sf libcudnn_ops.so.9 libcudnn_ops.so && \
+    ln -sf libcudnn.so.9 libcudnn.so && \
+    ln -sf libcudnn_cnn_infer.so.9 libcudnn_cnn_infer.so && \
+    ln -sf libcudnn_cnn_train.so.9 libcudnn_cnn_train.so && \
+    ldconfig
+
+ENV LD_LIBRARY_PATH=/opt/conda/lib/python3.11/site-packages/torch/lib:$LD_LIBRARY_PATH
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY app ./app
+COPY benchmark ./benchmark
+COPY utils ./utils
+COPY .env .
+
+RUN mkdir -p /app/logs
+
+CMD ["/bin/bash"]

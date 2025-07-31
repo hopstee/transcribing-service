@@ -1,0 +1,12 @@
+python-multipart
+fastapi
+uvicorn
+openai-whisper
+faster-whisper
+typer
+dotenv
+jiwer>=3.0.0
+matplotlib
+redis
+torch
+aiofiles

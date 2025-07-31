@@ -1,0 +1,78 @@
+services:
+  benchmark:
+    container_name: benchmark
+    build:
+      context: .
+      dockerfile: Dockerfile.bench
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    volumes:
+      - ./_cache/whisper:/root/.cache/whisper
+
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    networks:
+      - transcriber-network
+    restart: unless-stopped
+    volumes:
+      - shared-audio:/app/shared_audio
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    runtime: nvidia
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - NVIDIA_VISIBLE_DEVICES=all
+    depends_on:
+      - redis
+    networks:
+      - transcriber-network
+    restart: unless-stopped
+    volumes:
+      - ./logs:/app/logs
+      - ./_cache/whisper:/root/.cache/whisper
+      - shared-audio:/app/shared_audio
+
+  redis:
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - transcriber-network
+    restart: always
+    volumes:
+      - redis-data:/data
+    command: [ "redis-server", "--save", "60", "1", "--loglevel", "warning" ]
+
+networks:
+  transcriber-network:
+    name: transcriber-network
+
+volumes:
+  redis-data:
+  shared-audio:

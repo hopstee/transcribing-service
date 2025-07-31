@@ -1,0 +1,28 @@
+{
+  "name": "Transcriber Dev",
+  "dockerFile": "Dockerfile",
+  "context": "..",
+  "workspaceFolder": "/app",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/app,type=bind",
+  "mounts": [
+    "source=${localWorkspaceFolder}/main.py,target=/app/main.py,type=bind",
+    "source=${localWorkspaceFolder}/worker.py,target=/app/worker.py,type=bind",
+    "source=${localWorkspaceFolder}/shared_audio,target=/app/shared_audio,type=bind",
+    "source=${localWorkspaceFolder}/_cache/whisper,target=/root/.cache/whisper,type=bind"
+  ],
+  "runArgs": [
+    "--network=host"
+  ],
+  "postCreateCommand": "echo '✅ Container ready'",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.pythonPath": "/usr/local/bin/python"
+      },
+      "extensions": [
+        "ms-python.python",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  }
+}
