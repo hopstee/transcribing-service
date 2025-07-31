@@ -206,15 +206,17 @@ python3 -m benchmark.run
 DEFAULT_MODEL=base
 DEFAULT_DURATION=30
 LOG_LEVEL=INFO
-ALLOWED_EXTENSIONS=.mp3,.wav,.m4a
+ALLOWED_EXTENSIONS=.mp3,.wav,.m4a,.aac,.ogg
 
+REDIS_QUEUE_NAME = "transcribe_tasks"
+REDIS_RESULTS_PREFIX = "transcribe_result:"
 REDIS_HOST=redis
 REDIS_PORT=6379
 REDIS_DB=0
-REDIS_QUEUE_NAME=transcription_queue
-REDIS_RESULTS_PREFIX=task_result_
 
 UPLOAD_DIR=/app/shared_audio
+
+WHISPER_BEAM_SIZE=5
 ```
 
 ---
@@ -283,12 +285,14 @@ python-multipart
 fastapi
 uvicorn
 openai-whisper
+faster-whisper
 typer
 dotenv
 jiwer>=3.0.0
 matplotlib
 redis
 torch
+aiofiles
 ```
 
 ---
