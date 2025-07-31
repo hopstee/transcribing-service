@@ -55,10 +55,13 @@ docker compose up --scale worker=10 -d
 │   ├── devcontainer.json      # Конфигурация VS Code для разработки
 │   └── Dockerfile             # Докерфайл для разработки
 ├── app/
-│   ├── audio_service.py       # Обёртка над Whisper
-│   ├── config.py              # Настройки окружения
-│   ├── decorators.py          # Логирование этапов обработки
-│   └── utils.py               # Валидация и вспомогательные функции
+│   ├── core
+│   │   ├── config.py          # Настройки окружения
+│   │   ├── decorators.py      # Логирование этапов обработки
+│   │   └── utils.py           # Валидация и вспомогательные функции
+│   └── services               # Валидация и вспомогательные функции
+│   │   ├── audio_service.py   # Обёртка над Whisper
+│   │   └── redis_service.py   # Сервис для работы с redis
 ├── benchmark/
 │   ├── audios/                # Аудио записи для теста
 │   ├── plots/                 # Графики по результатам тестироваиня моделеф
